@@ -1,4 +1,6 @@
 defmodule Elixlsx.Util do
+  @moduledoc false
+
   alias Elixlsx.XML
   @col_alphabet Enum.to_list(?A..?Z)
 
@@ -104,11 +106,10 @@ defmodule Elixlsx.Util do
   def from_excel_coords(input) do
     case Regex.run(~r/^([A-Z]+)([0-9]+)$/, input, capture: :all_but_first) do
       nil ->
-        raise %ArgumentError{message: "Invalid excel coordinates: " <> inspect(input)}
+        raise %ArgumentError{message: "Invalid excel coordinates: #{inspect(input)}"}
 
-      [colS, rowS] ->
-        {row, _} = Integer.parse(rowS)
-        {row, decode_col(colS)}
+      [col_string, row_string] ->
+        {String.to_integer(row_string), decode_col(col_string)}
     end
   end
 
@@ -186,7 +187,7 @@ defmodule Elixlsx.Util do
   end
 
   @excel_epoch {{1899, 12, 31}, {0, 0, 0}}
-  @secs_per_day 86400
+  @secs_per_day 86_400
 
   @doc ~S"""
   Convert an erlang `:calendar` object, or a unix timestamp to an excel timestamp.
@@ -202,12 +203,7 @@ defmodule Elixlsx.Util do
     t_diff = (in_seconds - excel_epoch) / @secs_per_day
 
     # Apply the "Lotus 123" bug - 1900 is considered a leap year.
-    t_diff =
-      if t_diff > 59 do
-        t_diff + 1
-      else
-        t_diff
-      end
+    t_diff = if t_diff > 59, do: t_diff + 1, else: t_diff
 
     {:excelts, t_diff}
   end

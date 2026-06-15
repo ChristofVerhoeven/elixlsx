@@ -1,4 +1,6 @@
 defmodule Elixlsx.XML do
+  @moduledoc false
+
   @xml_chars_block_1 [9, 10, 13]
   @xml_chars_block_2 32..55_295
   @xml_chars_block_3 57_344..65_533

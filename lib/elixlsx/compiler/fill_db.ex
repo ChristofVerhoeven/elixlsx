@@ -3,6 +3,7 @@ defmodule Elixlsx.Compiler.FillDB do
   alias Elixlsx.Style.Fill
   alias Elixlsx.Compiler.DBUtil
 
+  @moduledoc false
   defstruct fills: %{}, element_count: 0
 
   @type t :: %FillDB{

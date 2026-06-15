@@ -2,6 +2,8 @@ defmodule Elixlsx.Compiler.NumFmtDB do
   alias __MODULE__
   alias Elixlsx.Style.NumFmt
   alias Elixlsx.Compiler.DBUtil
+
+  @moduledoc false
   defstruct numfmts: %{}, nextid: 164
 
   @type t :: %NumFmtDB{

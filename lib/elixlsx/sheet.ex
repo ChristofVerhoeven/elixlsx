@@ -55,14 +55,12 @@ defmodule Elixlsx.Sheet do
     %Sheet{name: name}
   end
 
-  defp split_cell_content_props(cell) do
-    cond do
-      is_list(cell) ->
-        {hd(cell), tl(cell)}
+  defp split_cell_content_props(cell) when is_list(cell) do
+    {hd(cell), tl(cell)}
+  end
 
-      true ->
-        {cell, []}
-    end
+  defp split_cell_content_props(cell) do
+    {cell, []}
   end
 
   @doc ~S"""
@@ -73,12 +71,10 @@ defmodule Elixlsx.Sheet do
   def to_csv_string(sheet) do
     Enum.map_join(sheet.rows, "\n", fn row ->
       Enum.map_join(row, ",", fn cell ->
-        {content, _} = split_cell_content_props(cell)
-
-        case content do
-          nil -> ""
-          _ -> to_string(content)
-        end
+        cell
+        |> split_cell_content_props()
+        |> elem(0)
+        |> to_string()
       end)
     end)
   end
@@ -222,7 +218,8 @@ defmodule Elixlsx.Sheet do
     %{sheet | pane_freeze: nil}
   end
 
-  @spec add_data_validations(Sheet.t(), String.t(), String.t(), String.t() | list(String.t())) :: Sheet.t()
+  @spec add_data_validations(Sheet.t(), String.t(), String.t(), String.t() | list(String.t())) ::
+          Sheet.t()
   def add_data_validations(sheet, start_cell, end_cell, values) do
     %{sheet | data_validations: [{start_cell, end_cell, values} | sheet.data_validations]}
   end

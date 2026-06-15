@@ -1,4 +1,6 @@
 defmodule Elixlsx.XMLTemplates do
+  @moduledoc false
+
   alias Elixlsx.Util, as: U
   alias Elixlsx.Compiler.CellStyleDB
   alias Elixlsx.Compiler.StringDB
@@ -215,13 +217,13 @@ defmodule Elixlsx.XMLTemplates do
     {updated_row, _id} =
       row
       |> List.foldl({"", 1}, fn cell, {acc, colidx} ->
-        {content, styleID, cellstyle} = split_into_content_style(cell, wci)
+        {content, style_id, cellstyle} = split_into_content_style(cell, wci)
 
         if is_nil(content) do
           {acc, colidx + 1}
         else
           content =
-            if CellStyle.is_date?(cellstyle) do
+            if CellStyle.date_string?(cellstyle) do
               U.to_excel_datetime(content)
             else
               content
@@ -240,8 +242,7 @@ defmodule Elixlsx.XMLTemplates do
               :error ->
                 raise %ArgumentError{
                   message:
-                    "Invalid column content at " <>
-                      U.to_excel_coords(rowidx, colidx) <> ": " <> inspect(content)
+                    "Invalid column content at #{U.to_excel_coords(rowidx, colidx)}: #{inspect(content)}"
                 }
             end
 
@@ -249,13 +250,10 @@ defmodule Elixlsx.XMLTemplates do
             case content_type do
               :formula ->
                 value =
-                  if not is_nil(content_opts[:value]),
-                    do: "<v>#{content_opts[:value]}</v>",
-                    else: ""
+                  if is_nil(content_opts[:value]), do: "", else: "<v>#{content_opts[:value]}</v>"
 
                 """
-                <c r="#{U.to_excel_coords(rowidx, colidx)}"
-                s="#{styleID}">
+                <c r="#{U.to_excel_coords(rowidx, colidx)}" s="#{style_id}">
                 <f>#{content_value}</f>
                 #{value}
                 </c>
@@ -263,15 +261,12 @@ defmodule Elixlsx.XMLTemplates do
 
               :empty ->
                 """
-                <c r="#{U.to_excel_coords(rowidx, colidx)}"
-                s="#{styleID}">
-                </c>
+                <c r="#{U.to_excel_coords(rowidx, colidx)}" s="#{style_id}"></c>
                 """
 
               type ->
                 """
-                <c r="#{U.to_excel_coords(rowidx, colidx)}"
-                s="#{styleID}" t="#{type}">
+                <c r="#{U.to_excel_coords(rowidx, colidx)}" s="#{style_id}" t="#{type}">
                 <v>#{content_value}</v>
                 </c>
                 """
@@ -326,7 +321,7 @@ defmodule Elixlsx.XMLTemplates do
   defp xl_merge_cells(merge_cells) do
     """
     <mergeCells count="#{Enum.count(merge_cells)}">
-      #{Enum.map(merge_cells, fn {fromCell, toCell} -> "<mergeCell ref=\"#{fromCell}:#{toCell}\"/>" end)}
+      #{Enum.map(merge_cells, fn {from, to} -> "<mergeCell ref=\"#{from}:#{to}\"/>" end)}
     </mergeCells>
     """
   end
@@ -425,7 +420,9 @@ defmodule Elixlsx.XMLTemplates do
       |> Enum.sort()
       |> Enum.dedup()
 
-    unless Enum.empty?(col_indices) do
+    if Enum.empty?(col_indices) do
+      ""
+    else
       cols =
         col_indices
         |> Stream.map(
@@ -440,13 +437,11 @@ defmodule Elixlsx.XMLTemplates do
         |> Enum.map_join(&make_col/1)
 
       "<cols>#{cols}</cols>"
-    else
-      ""
     end
   end
 
   defp make_max_outline_level_row(row_outline_levels) do
-    unless row_outline_levels === %{} do
+    if row_outline_levels !== %{} do
       max_outline_level_row =
         Map.values(row_outline_levels)
         |> Enum.max()

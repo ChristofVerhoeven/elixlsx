@@ -5,6 +5,7 @@ defmodule Elixlsx.Style.CellStyle do
   alias Elixlsx.Style.Fill
   alias Elixlsx.Style.BorderStyle
 
+  @moduledoc false
   defstruct font: nil, fill: nil, numfmt: nil, border: nil
 
   @type t :: %CellStyle{
@@ -23,11 +24,11 @@ defmodule Elixlsx.Style.CellStyle do
     %CellStyle{font: font, fill: fill, numfmt: numfmt, border: border}
   end
 
-  def is_date?(cellstyle) do
+  def date_string?(cellstyle) do
     cond do
       is_nil(cellstyle) -> false
       is_nil(cellstyle.numfmt) -> false
-      true -> NumFmt.is_date?(cellstyle.numfmt)
+      true -> NumFmt.date_string?(cellstyle.numfmt)
     end
   end
 end

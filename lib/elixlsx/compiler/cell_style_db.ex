@@ -7,6 +7,7 @@ defmodule Elixlsx.Compiler.CellStyleDB do
   alias Elixlsx.Compiler.WorkbookCompInfo
   alias Elixlsx.Compiler.DBUtil
 
+  @moduledoc false
   defstruct cellstyles: %{}, element_count: 0
 
   @type t :: %CellStyleDB{

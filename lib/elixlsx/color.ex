@@ -1,4 +1,6 @@
 defmodule Elixlsx.Color do
+  @moduledoc false
+
   @doc ~S"""
   Parses a color property and regurns a ARGB code (FFRRGGBB).
 
@@ -24,7 +26,7 @@ defmodule Elixlsx.Color do
 
       false ->
         raise %ArgumentError{
-          message: "Font color must be in format #rrggbb (hex values), is " <> inspect(color)
+          message: "Font color must be in format #rrggbb (hex values), is #{inspect(color)}"
         }
     end
   end
