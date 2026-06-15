@@ -1,4 +1,6 @@
 defmodule Elixlsx.Style.NumFmt do
+  @moduledoc false
+
   alias Elixlsx.XML
   alias __MODULE__
 
@@ -56,7 +58,7 @@ defmodule Elixlsx.Style.NumFmt do
     %NumFmt{format: "yyyy-mm-dd h:mm:ss"}
   end
 
-  def is_date?(numfmt) do
+  def date_string?(numfmt) do
     # TODO while this is probably reliable enough for 99% of cases...
     String.contains?(numfmt.format, "yy")
   end

@@ -1,4 +1,6 @@
 defmodule Elixlsx.Compiler do
+  @moduledoc false
+
   alias Elixlsx.Compiler.WorkbookCompInfo
   alias Elixlsx.Compiler.SheetCompInfo
   alias Elixlsx.Compiler.CellStyleDB
@@ -14,24 +16,22 @@ defmodule Elixlsx.Compiler do
   """
   @spec make_sheet_info(nonempty_list(Sheet.t()), non_neg_integer) ::
           {list(SheetCompInfo.t()), non_neg_integer}
-  def make_sheet_info(sheets, init_rId) do
-    # fold helper. aggregator holds {list(SheetCompInfo), sheetidx, rId}.
-    add_sheet = fn _, {sci, idx, rId} ->
-      {[SheetCompInfo.make(idx, rId) | sci], idx + 1, rId + 1}
+  def make_sheet_info(sheets, init_rid) do
+    # fold helper. aggregator holds {list(sheet_comp_infos), sheetidx, rid}.
+    add_sheet = fn _, {sci, idx, rid} ->
+      {[SheetCompInfo.make(idx, rid) | sci], idx + 1, rid + 1}
     end
 
     # TODO probably better to use a zip [1..] |> map instead of fold[l|r]/reverse
-    {sheetCompInfos, _, nextrID} = List.foldl(sheets, {[], 1, init_rId}, add_sheet)
-    {Enum.reverse(sheetCompInfos), nextrID}
+    {sheet_comp_infos, _, next_rid} = List.foldl(sheets, {[], 1, init_rid}, add_sheet)
+    {Enum.reverse(sheet_comp_infos), next_rid}
   end
 
   def compinfo_cell_pass_value(wci, value) do
-    cond do
-      is_binary(value) && XML.valid?(value) ->
-        update_in(wci.stringdb, &StringDB.register_string(&1, value))
-
-      true ->
-        wci
+    if is_binary(value) and XML.valid?(value) do
+      update_in(wci.stringdb, &StringDB.register_string(&1, value))
+    else
+      wci
     end
   end
 
@@ -47,15 +47,13 @@ defmodule Elixlsx.Compiler do
 
   @spec compinfo_cell_pass(WorkbookCompInfo.t(), any) :: WorkbookCompInfo.t()
   def compinfo_cell_pass(wci, cell) do
-    cond do
-      is_list(cell) ->
-        wci
-        |> compinfo_cell_pass_value(hd(cell))
-        |> compinfo_cell_pass_style(tl(cell))
-
-      true ->
-        # no style information attached in this cell
-        compinfo_cell_pass_value(wci, cell)
+    if is_list(cell) do
+      wci
+      |> compinfo_cell_pass_value(hd(cell))
+      |> compinfo_cell_pass_style(tl(cell))
+    else
+      # no style information attached in this cell
+      compinfo_cell_pass_value(wci, cell)
     end
   end
 
@@ -77,11 +75,11 @@ defmodule Elixlsx.Compiler do
 
   @first_free_rid 2
   def make_workbook_comp_info(workbook) do
-    {sci, next_rId} = make_sheet_info(workbook.sheets, @first_free_rid)
+    {sci, next_rid} = make_sheet_info(workbook.sheets, @first_free_rid)
 
     %WorkbookCompInfo{
       sheet_info: sci,
-      next_free_xl_rid: next_rId
+      next_free_xl_rid: next_rid
     }
     |> compinfo_from_sheets(workbook.sheets)
     |> CellStyleDB.register_all()

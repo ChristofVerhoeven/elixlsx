@@ -31,3 +31,4 @@ elixlsx-*.tar
 
 # Misc.
 *.swp
+.tool-versions

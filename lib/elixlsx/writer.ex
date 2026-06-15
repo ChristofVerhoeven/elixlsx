@@ -21,31 +21,31 @@ defmodule Elixlsx.Writer do
   be used with the OTP :zip module.)
   """
   def create_files(workbook, wci) do
-    get_docProps_dir(workbook) ++
+    get_doc_props_dir(workbook) ++
       get__rels_dir(workbook) ++
-      get_xl_dir(workbook, wci) ++ [get_contentTypes_xml(workbook, wci)]
+      get_xl_dir(workbook, wci) ++ [get_content_types_xml(workbook, wci)]
   end
 
-  @spec get_docProps_app_xml(Workbook.t()) :: zip_tuple
+  @spec get_doc_props_app_xml(Workbook.t()) :: zip_tuple
   @doc ~S"""
   Returns a tuple `{'docProps/app.xml', "XML Data"}`.
   """
-  def get_docProps_app_xml(_) do
+  def get_doc_props_app_xml(_) do
     {~c"docProps/app.xml", XMLTemplates.docprops_app()}
   end
 
-  @spec get_docProps_core_xml(Workbook.t()) :: zip_tuple
-  def get_docProps_core_xml(workbook) do
+  @spec get_doc_props_core_xml(Workbook.t()) :: zip_tuple
+  def get_doc_props_core_xml(workbook) do
     timestamp = U.iso_timestamp(workbook.datetime)
     {~c"docProps/core.xml", XMLTemplates.docprops_core(timestamp)}
   end
 
-  @spec get_docProps_dir(Workbook.t()) :: list(zip_tuple)
+  @spec get_doc_props_dir(Workbook.t()) :: list(zip_tuple)
   @doc ~S"""
   Returns files in the docProps directory.
   """
-  def get_docProps_dir(data) do
-    [get_docProps_app_xml(data), get_docProps_core_xml(data)]
+  def get_doc_props_dir(data) do
+    [get_doc_props_app_xml(data), get_doc_props_core_xml(data)]
   end
 
   @spec get__rels_dotrels(Workbook.t()) :: zip_tuple
@@ -91,8 +91,8 @@ defmodule Elixlsx.Writer do
     {~c"xl/workbook.xml", XMLTemplates.make_workbook_xml(data, sheetCompInfos)}
   end
 
-  @spec get_xl_sharedStrings_xml(any, WorkbookCompInfo.t()) :: zip_tuple
-  def get_xl_sharedStrings_xml(_, wci) do
+  @spec get_xl_shared_strings_xml(any, WorkbookCompInfo.t()) :: zip_tuple
+  def get_xl_shared_strings_xml(_, wci) do
     {~c"xl/sharedStrings.xml",
      XMLTemplates.make_xl_shared_strings(StringDB.sorted_id_string_tuples(wci.stringdb))}
   end
@@ -112,7 +112,7 @@ defmodule Elixlsx.Writer do
     end)
   end
 
-  def get_contentTypes_xml(_, wci) do
+  def get_content_types_xml(_, wci) do
     {~c"[Content_Types].xml", XMLTemplates.make_contenttypes_xml(wci)}
   end
 
@@ -122,7 +122,7 @@ defmodule Elixlsx.Writer do
 
     [
       get_xl_styles_xml(wci),
-      get_xl_sharedStrings_xml(data, wci),
+      get_xl_shared_strings_xml(data, wci),
       get_xl_workbook_xml(data, sheet_comp_infos)
     ] ++
       get_xl_rels_dir(data, sheet_comp_infos, next_free_xl_rid) ++

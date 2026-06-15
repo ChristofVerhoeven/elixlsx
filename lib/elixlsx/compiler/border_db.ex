@@ -3,6 +3,7 @@ defmodule Elixlsx.Compiler.BorderStyleDB do
   alias Elixlsx.Style.BorderStyle
   alias Elixlsx.Compiler.DBUtil
 
+  @moduledoc false
   defstruct borders: %{}, element_count: 0
 
   @type t :: %BorderStyleDB{

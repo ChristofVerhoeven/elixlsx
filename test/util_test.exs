@@ -1,6 +1,8 @@
 use PropCheck
 
 defmodule UtilTest do
+  @moduledoc false
+
   use ExUnit.Case, async: false
 
   alias Elixlsx.Util

@@ -1,4 +1,6 @@
 defmodule ElixlsxTest do
+  @moduledoc false
+
   require Record
 
   Record.defrecord(

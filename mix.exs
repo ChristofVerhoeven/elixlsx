@@ -1,14 +1,14 @@
 defmodule Elixlsx.Mixfile do
   use Mix.Project
 
-  @source_url "https://github.com/xou/elixlsx"
-  @version "0.6.0"
+  @source_url "https://github.com/ChristofVerhoeven/elixlsx"
+  @version "0.7.0"
 
   def project do
     [
       app: :elixlsx,
       version: @version,
-      elixir: "~> 1.12",
+      elixir: "~> 1.19",
       package: package(),
       description: "Elixlsx is a writer for the MS Excel OpenXML format (`.xlsx`).",
       build_embedded: Mix.env() == :prod,
@@ -24,9 +24,9 @@ defmodule Elixlsx.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:propcheck, "~> 1.4", only: [:dev, :test]},
-      {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false},
+      {:ex_doc, "~> 0.40", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
@@ -42,10 +42,10 @@ defmodule Elixlsx.Mixfile do
 
   defp package do
     [
-      maintainers: ["Nikolai Weh <niko.weh@gmail.com>"],
+      maintainers: ["Christof Verhoeven"],
       licenses: ["MIT"],
       links: %{
-        "Changelog" => "https://hexdocs.pm/elixlsx/changelog.html",
+        "Changelog" => "https://github.com/ChristofVerhoeven/elixlsx/blob/master/CHANGELOG.md",
         "GitHub" => @source_url
       }
     ]

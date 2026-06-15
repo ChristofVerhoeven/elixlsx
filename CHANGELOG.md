@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+! Minimum elixir version raised to 1.19
+- removed travis workflows
+- added github ci workflow
+- `mix format --migrate`
+- some credo style fixes
+
 ## 0.6.0 [WIP]
 
 ! Minimum elixir version raised to ~~1.7 (#116)~~ 1.12 (#140)

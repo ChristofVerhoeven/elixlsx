@@ -3,6 +3,7 @@ defmodule Elixlsx.Compiler.FontDB do
   alias Elixlsx.Style.Font
   alias Elixlsx.Compiler.DBUtil
 
+  @moduledoc false
   defstruct fonts: %{}, element_count: 0
 
   @type t :: %FontDB{
